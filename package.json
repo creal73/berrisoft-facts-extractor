@@ -1,0 +1,28 @@
+{
+  "name": "berrisoft-facts-extractor",
+  "version": "1.0.0",
+  "description": "Tools related to Berrisoft Facts",
+  "main": "dist/index.js",
+  "bin": {
+    "bfx": "./bin/bfx"
+  },
+  "scripts": {
+    "build": "parcel build index.ts --target node",
+    "build:dev": "parcel build index.ts --target node --no-minify",
+    "prepublish": "npm run build",
+    "clean": "rm -rf *.js *.d.ts *.tgz ./dist",
+    "prettier": "npx prettier --write index.ts"
+  },
+  "author": "Alexandre Koelsch",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/command-line-args": "^5.0.0",
+    "@types/command-line-usage": "^5.0.1",
+    "@types/node": "^10.12.2",
+    "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.5",
+    "parcel-bundler": "^1.10.3",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6"
+  }
+}

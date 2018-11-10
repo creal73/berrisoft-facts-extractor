@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+const BfxCli = require('../dist/index').BfxCli;
+const cli = new BfxCli();
+cli.run();
