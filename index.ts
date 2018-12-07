@@ -81,9 +81,14 @@ interface CliOptions {
     output: string;
 }
 
+interface Quote {
+    who: string;
+    how: string;
+    what: string;
+}
+
 interface Fact {
-    date: Date | null;
-    quotes: string[];
+    quotes: Quote[]
 }
 
 /**
@@ -103,8 +108,8 @@ export class BfxCli {
     }
 
     /**
-     * Startup of bfx CLI.
-     */
+    * Startup of bfx CLI.
+    */
     run() {
         if (this.options.help) {
             this.usage();
@@ -121,9 +126,9 @@ export class BfxCli {
     }
 
     /**
-     * Parses the input file to convert it to JSON structure.
-     * @param {string} file
-     */
+    * Parses the input file to convert it to JSON structure.
+    * @param {string} file
+    */
     private parseFile(file: string) {
         let firstTime: boolean = true;
         let fact: Fact;
@@ -138,10 +143,7 @@ export class BfxCli {
             const blankOrEmptyOrLineBreak = /^\s*$/;
 
             if (firstTime) {
-                fact = {
-                    date: null,
-                    quotes: []
-                };
+                fact = { quotes: [] };
             }
 
             firstTime = false;
@@ -167,17 +169,15 @@ export class BfxCli {
                         console.log(`Creating a new Fact !`);
                     }
 
-                    fact = {
-                        date: null,
-                        quotes: []
-                    };
+                    fact = { quotes: [] };
                 }
                 // Iterate over the quotes of the current fact
                 if (this.options.verbose) {
                     console.log(`Pushing quote... (${line})`);
                 }
 
-                fact.quotes.push(line);
+                const quote = this.extractQuote(line);
+                fact.quotes.push(quote);
             }
         });
 
@@ -198,9 +198,35 @@ export class BfxCli {
     }
 
     /**
-     * Prints usage.
-     */
+    * Prints usage.
+    */
     private usage() {
         console.log(this.sections);
+    }
+
+    /**
+    * Extracts a quote object from a line.
+    * @param line The line corresponding to a quote.
+    */
+    private extractQuote(line: string): Quote {
+        const whoRegex = /^\[(\w+)\]/;
+        const whoMatch = line.match(whoRegex);
+        let who: string = '';
+        if (whoMatch) {
+            who = whoMatch[1];
+        }
+
+        const howRegex = /\((.+)\)/;
+        const howMatch = line.match(howRegex);
+        let how: string = '';
+        if (howMatch) {
+            how = howMatch[1];
+        }
+
+        line = line.replace(`[${who}]`, '');
+        line = line.replace(`(${how})`, '');
+        const what = line.trim();
+
+        return { who: who, how: how, what: what };
     }
 }
