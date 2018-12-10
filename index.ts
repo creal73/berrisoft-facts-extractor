@@ -3,93 +3,12 @@ import fs = require('fs');
 import commandLineArgs = require('command-line-args');
 import commandLineUsage = require('command-line-usage');
 
-import { Section, OptionDefinition } from 'command-line-usage';
+import { Fact } from './src/fact';
 
-/**
- * CLI Arguments options.
- * @see OptionDefinition
- */
-const optionDefinitions: OptionDefinition[] = [
-    {
-        name: 'file',
-        type: String,
-        defaultOption: true,
-        typeLabel: 'file',
-        description: 'The input file to process.',
-    },
-    {
-        name: 'output',
-        type: String,
-        defaultValue: 'data.json',
-        typeLabel: 'file',
-        description: 'The output file where to extract facts.',
-    },
-    {
-        name: 'verbose',
-        type: Boolean,
-        alias: 'v',
-        defaultValue: false,
-        description: 'To display more information during processing.',
-    },
-    {
-        name: 'help',
-        type: Boolean,
-        description: 'Print this usage guide.',
-    },
-];
+import { optionsDefinition } from './src/option-definitions';
+import { sectionsDefinition } from './src/sections-definition';
 
-/**
- * CLI Usage definition.
- * @see Section
- */
-const sectionsDefinition: Section[] = [
-    {
-        header: 'Berrisoft Facts Extractor',
-        content: 'Extracts Berrisoft Facts from text file.',
-    },
-    {
-        header: 'Synopsis',
-        content: [
-            '$ bfx [{bold --file} {underline file}] {bold --output} {underline file} ...',
-            '$ bfx {bold --help}',
-        ],
-    },
-    {
-        header: 'Examples',
-        content: [
-            {
-                desc:
-                    '1. Short syntax. By default, parsed data will be saved to data.json in current directory. ',
-                example: '$ bfx myFile.txt',
-            },
-            {
-                desc: '2. Complete syntax. ',
-                example: '$ bfx --file myFile.txt --output parsedData.json',
-            },
-        ],
-    },
-    {
-        header: 'Options',
-        optionList: optionDefinitions,
-    },
-];
-
-interface CliOptions {
-    help: true;
-    file: string;
-    verbose: boolean;
-    output: string;
-}
-
-interface Quote {
-    who: string;
-    how: string;
-    what: string;
-}
-
-interface Fact {
-    quotes: Quote[]
-}
+import { extractQuote } from './src/extractor';
 
 /**
  * Definition of the Berrisoft Facts eXtractor CLI.
@@ -101,15 +20,15 @@ export class BfxCli {
     private facts: Fact[];
 
     constructor() {
-        this.options = commandLineArgs(optionDefinitions);
+        this.options = commandLineArgs(optionsDefinition);
         this.sections = commandLineUsage(sectionsDefinition);
 
         this.facts = [];
     }
 
     /**
-    * Startup of bfx CLI.
-    */
+     * Startup of bfx CLI.
+     */
     run() {
         if (this.options.help) {
             this.usage();
@@ -126,9 +45,9 @@ export class BfxCli {
     }
 
     /**
-    * Parses the input file to convert it to JSON structure.
-    * @param {string} file
-    */
+     * Parses the input file to convert it to JSON structure.
+     * @param {string} file
+     */
     private parseFile(file: string) {
         let firstTime: boolean = true;
         let fact: Fact;
@@ -176,7 +95,7 @@ export class BfxCli {
                     console.log(`Pushing quote... (${line})`);
                 }
 
-                const quote = this.extractQuote(line);
+                const quote = extractQuote(line);
                 fact.quotes.push(quote);
             }
         });
@@ -198,35 +117,9 @@ export class BfxCli {
     }
 
     /**
-    * Prints usage.
-    */
+     * Prints usage.
+     */
     private usage() {
         console.log(this.sections);
-    }
-
-    /**
-    * Extracts a quote object from a line.
-    * @param line The line corresponding to a quote.
-    */
-    private extractQuote(line: string): Quote {
-        const whoRegex = /^\[(\w+)\]/;
-        const whoMatch = line.match(whoRegex);
-        let who: string = '';
-        if (whoMatch) {
-            who = whoMatch[1];
-        }
-
-        const howRegex = /\((.+)\)/;
-        const howMatch = line.match(howRegex);
-        let how: string = '';
-        if (howMatch) {
-            how = howMatch[1];
-        }
-
-        line = line.replace(`[${who}]`, '');
-        line = line.replace(`(${how})`, '');
-        const what = line.trim();
-
-        return { who: who, how: how, what: what };
     }
 }
