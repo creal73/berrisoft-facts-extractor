@@ -1,5 +1,5 @@
-import { Quote } from "./quote";
+import { Quote } from './quote';
 
 export interface Fact {
-    quotes: Quote[];
+  quotes: Quote[];
 }

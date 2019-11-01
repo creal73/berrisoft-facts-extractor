@@ -1,5 +1,5 @@
 export interface Quote {
-    who: string;
-    how: string;
-    what: string;
+  who: string;
+  how: string;
+  what: string;
 }
