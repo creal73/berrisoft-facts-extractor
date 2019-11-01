@@ -18,8 +18,8 @@
   "author": "Alexandre Koelsch",
   "license": "ISC",
   "devDependencies": {
-    "@types/command-line-args": "^5.0.0",
-    "@types/command-line-usage": "^5.0.1",
+    "@types/command-line-args": "5.0.0",
+    "@types/command-line-usage": "5.0.1",
     "@types/jest": "23.3.14",
     "@types/node": "10.17.2",
     "command-line-args": "5.1.1",
@@ -29,5 +29,15 @@
     "ts-jest": "23.10.5",
     "ts-node": "7.0.1",
     "typescript": "3.6.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/extractor.ts",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ]
   }
 }
